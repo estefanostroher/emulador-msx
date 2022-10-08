@@ -1,44 +1,42 @@
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-void leitura_do_jogo(char *arq){
-    FILE *arquivo = fopen(arq, "r");
-    char linha[200];
+/*
+    O desafio é criar um programa em C (no PC) para carregar o DSK na
+memória e encontrar automaticamente os nomes dos jogos no bloco que contém
+o menuzinho e o programa que ele chama (provavelmente .LDR ou .BAS).
+*/
 
-    if(arquivo){
-		printf("\nTexto lido do arquivo dos discos:\n");
-		while(fscanf(arquivo, "%s", linha) != -1){
-			printf("%s ", linha);
-		}
-		fclose(arquivo);
-	}
-	
-	else{
-		printf("\nErro ao ler do arquivo!");
-	}
+typedef struct
+{
+    char linha[400];
+    struct no* prox;
+}no;
+
+void Conteudo(char nome[255])
+{
+    FILE* arq = fopen(nome,"rt");
+    if(arq==NULL){printf("Nao carregou %s\n", nome); return;}
+    char linha[600];
+    fscanf(arq, "%s ", &linha);
+    printf("%s \n", linha);
+    fclose(arq);
 }
 
-int main(){
+int main()
+{
+    char* nome;
+    nome = (char*) malloc(255);
+    
     int i;
-    char *nome_do_jogo;
-    nome_do_jogo = malloc(sizeof(nome_do_jogo)*256);
+    for(i=1; i<131; i++)
+    {
+        if(i<10) sprintf(nome,"arquivo/mania00%d.dsk", i);
+        else if(i>=10 && i<100)sprintf(nome,"arquivo/mania0%d.dsk", i);
+        else sprintf(nome,"arquivo/mania%d.dsk", i);
 
-    for(i = 0; i < 131; i++){
-        if(i < 10){
-            sprintf(nome_do_jogo, "C:/Users/estel/OneDrive/Documents/algoritmos e programação/Estrutura de Dados 1/msx1_mania/mania00%d.zip", i);
-        }
-
-        else if(i > 9 && i < 100){
-            sprintf(nome_do_jogo, "C:/Users/estel/OneDrive/Documents/algoritmos e programação/Estrutura de Dados 1/msx1_mania/mania0%d.zip", i);
-        }
-
-        else{
-            sprintf(nome_do_jogo, "C:/Users/estel/OneDrive/Documents/algoritmos e programação/Estrutura de Dados 1/msx1_mania/mania%d.zip", i);
-        }
-        leitura_do_jogo(nome_do_jogo);
+        Conteudo(nome);
     }
-
-    free(nome_do_jogo);
-
-    return 0;
+    nome = NULL;
+    free(nome);
 }
